@@ -18,6 +18,8 @@ function Assert-True {
 
 Assert-True ($lock.version -eq '2.87.5' -and $lock.archiveSha256 -eq '5ffde6927f7355ca3fdd5d785b581256a8e6539fa13e395a891ade6ba1040850') 'dgVoodoo2 provenance must stay pinned to the evaluated complete archive.'
 Assert-True ($lock.profileSha256 -eq 'fd9413ae24ef4028c19b304b48f7062d53871f25942baaa17d554bfeb1261b93' -and $plan -match $lock.profileSha256) 'The reviewed MW4 dgVoodoo profile hash must remain recorded and enforced by the install boundary.'
+$profileHash = (Get-FileHash -LiteralPath (Join-Path $root 'assets/compatibility/dgVoodoo-MW4.conf') -Algorithm SHA256).Hash.ToLowerInvariant()
+Assert-True ($profileHash -eq $lock.profileSha256) 'The committed profile bytes must hash to the lock value; line-ending or content drift is not allowed.'
 Assert-True ($releaseBuilder -match $lock.profileSha256) 'Release assembly must accept only the same reviewed dgVoodoo profile hash enforced by the install boundary.'
 Assert-True ($lock.files.'MS/x86/DDraw.dll' -eq '612a24408a090a3c6f3886557fa18034ee742e94ad0a40ebdf854d2816176c2e' -and $lock.productBindings.Count -eq 3) 'The exact stock x86 wrapper and all three product bindings must remain recorded.'
 Assert-True ($profile -match 'Version\s*=\s*0x287' -and $profile -match 'OutputAPI\s*=\s*d3d12_fl12_0' -and $profile -match 'ScalingMode\s*=\s*stretched_ar' -and $profile -match 'FullScreenMode\s*=\s*false' -and $profile -match 'CenterAppWindow\s*=\s*true' -and $profile -match 'WindowedAttributes\s*=\s*borderless,\s*fullscreensize' -and $profile -match 'AppControlledScreenMode\s*=\s*false') 'The profile must preserve each supplied surface aspect in a D3D12-backed centered borderless desktop-sized window, avoiding a physical display-mode switch.'

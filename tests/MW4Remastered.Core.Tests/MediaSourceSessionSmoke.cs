@@ -21,6 +21,16 @@ internal static class MediaSourceSessionSmoke
             }
             Check(backend.MountCount == 0, "directory media session owns no image", failures);
 
+            var lazyFactory = new MediaSourceSessionFactory(
+                () => throw new InvalidOperationException("The Windows ISO backend must not be constructed for directory media."),
+                new IsoArchiveExtractor());
+            using (var directory = lazyFactory.Open(mountedRoot))
+            {
+                Check(directory.Kind == MediaSourceKind.Directory &&
+                      directory.Items.Single().RootPath == Path.GetFullPath(mountedRoot),
+                    "directory media session never constructs the Windows ISO backend", failures);
+            }
+
             var image = Write(root, "disc.iso", "fixture");
             using (var iso = factory.Open(image))
             {

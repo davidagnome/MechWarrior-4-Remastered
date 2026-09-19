@@ -11,13 +11,17 @@ public interface IMediaSourceSession : IDisposable
 
 public sealed class MediaSourceSessionFactory
 {
-    private readonly OwnedIsoMediaSessionFactory isoSessions;
+    private readonly Lazy<OwnedIsoMediaSessionFactory> isoSessions;
     private readonly IsoArchiveExtractor archives;
     private readonly MercenariesPr1ArchiveExtractor mercenariesPr1;
     private readonly MechPakIsoProjection mechPakProjection;
 
     public MediaSourceSessionFactory()
-        : this(new OwnedIsoMediaSessionFactory(new PowerShellDiskImageBackend()), new IsoArchiveExtractor(), new MercenariesPr1ArchiveExtractor(), new MechPakIsoProjection())
+        : this(
+            () => new OwnedIsoMediaSessionFactory(new PowerShellDiskImageBackend()),
+            new IsoArchiveExtractor(),
+            new MercenariesPr1ArchiveExtractor(),
+            new MechPakIsoProjection())
     {
     }
 
@@ -26,11 +30,25 @@ public sealed class MediaSourceSessionFactory
         IsoArchiveExtractor archives,
         MercenariesPr1ArchiveExtractor? mercenariesPr1 = null,
         MechPakIsoProjection? mechPakProjection = null)
+        : this(
+            () => isoSessions ?? throw new ArgumentNullException(nameof(isoSessions)),
+            archives,
+            mercenariesPr1,
+            mechPakProjection)
     {
-        this.isoSessions = isoSessions ?? throw new ArgumentNullException(nameof(isoSessions));
+    }
+
+    internal MediaSourceSessionFactory(
+        Func<OwnedIsoMediaSessionFactory> isoSessionsFactory,
+        IsoArchiveExtractor archives,
+        MercenariesPr1ArchiveExtractor? mercenariesPr1 = null,
+        MechPakIsoProjection? mechPakProjection = null)
+    {
+        ArgumentNullException.ThrowIfNull(isoSessionsFactory);
         this.archives = archives ?? throw new ArgumentNullException(nameof(archives));
         this.mercenariesPr1 = mercenariesPr1 ?? new MercenariesPr1ArchiveExtractor();
         this.mechPakProjection = mechPakProjection ?? new MechPakIsoProjection();
+        isoSessions = new Lazy<OwnedIsoMediaSessionFactory>(isoSessionsFactory);
     }
 
     public IMediaSourceSession Open(string sourcePath, CancellationToken cancellationToken = default)
@@ -70,7 +88,7 @@ public sealed class MediaSourceSessionFactory
                 throw;
             }
             if (Directory.Exists(scratch)) Directory.Delete(scratch, recursive: true);
-            var session = isoSessions.Open(source, cancellationToken);
+            var session = isoSessions.Value.Open(source, cancellationToken);
             return new MediaSourceSession(
                 MediaSourceKind.Iso,
                 new[] { new OpenMediaItem(null, session.RootPath) },
@@ -127,7 +145,7 @@ public sealed class MediaSourceSessionFactory
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var image = Path.Combine(extraction.DestinationRoot, relativePath.Replace('/', Path.DirectorySeparatorChar));
-                var session = isoSessions.Open(image, cancellationToken);
+                var session = isoSessions.Value.Open(image, cancellationToken);
                 owned.Add(session);
                 cancellationToken.ThrowIfCancellationRequested();
                 items.Add(new OpenMediaItem(relativePath, session.RootPath));
