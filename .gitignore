@@ -52,6 +52,9 @@ extracted/
 *.img
 *.sub
 
+# Local verification screenshots
+/Screenshots/
+
 # Downloaded toolchains and dependency caches
 node_modules/
 __pycache__/

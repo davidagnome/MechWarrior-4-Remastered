@@ -6,13 +6,13 @@ Purpose: decide whether MechWarrior 4 Remastered can support a Linux installer/l
 
 ## Premise correction
 
-This repository contains no game or renderer source. The games remain the original 32-bit x86 Windows executables staged from user media; the "remaster" is an installer/launcher plus a compatibility layer. A cross-platform release therefore means a cross-platform installer/launcher and a Wine/CrossOver runtime, not a native game binary. Native Vulkan/MoltenVK game rendering would require a clean-room engine reimplementation and is out of scope.
+This repository contains no game or renderer source. The games remain the original 32-bit x86 Windows executables staged from user media; the "remaster" is an installer/launcher plus a compatibility layer. A cross-platform release therefore means a cross-platform installer/launcher and a Wine/CrossOver runtime, not a native game binary. Native Vulkan/MoltenVK game rendering would require a clean-room engine reimplementation and is out of scope for this product. A separate accepted track evaluates that reimplementation goal (ADR 0013; `active/ENGINE_REIMPLEMENTATION_FEASIBILITY.md` records the Phase 0 first pass); it changes nothing here.
 
 ## Ground truth
 
 | Item | Fact |
 |---|---|
-| Game binaries | 32-bit x86, DirectDraw/Direct3D 7, SafeDisc retail (`PCGamingWiki` Vengeance, retrieved 2026-09-18) |
+| Game binaries | 32-bit x86, DirectDraw/Direct3D 7, SafeDisc retail (`PCGamingWiki` Vengeance, retrieved 2026-09-18). Locally confirmed 2026-10-11 from the transformed Vengeance executable staged by the Phase 3 spike in the untracked CrossOver bottle `mw4-feasibility` (`drive_c/MW4Test/vengeance/MW4.exe`): its API strings reference `ddraw.dll`, `d3dim.dll`, `dinput.dll`, `dsound.dll`, and `dplayx.dll`, and no `d3d8.dll` appears anywhere in the image. The bundled DirectX 8.0 redistributable is the required runtime, not the API the engine renders through; Black Knight and Mercenaries remain unverified locally (retail stubs hide imports behind SafeDisc) |
 | Windows renderer | dgVoodoo2 2.87.5 x86 DirectDraw/D3DImm wrappers with D3D12 backend plus the source-built presentation add-on (`active/ARCHITECTURE.md`; `tools/compatibility/patches/dgVoodoo2-MW4-Presentation.patch`) |
 | C# split | `MW4Remastered.Core` targets `net10.0`; Launcher and Installer are WinForms `net10.0-windows`; `MW4Remastered.RtpPatchHost` is self-contained `win-x86`; packaging is Inno Setup (`packaging/MechWarrior4Remastered.iss`) |
 | Release pipeline | `tools/package/build-release.ps1:34-43` publishes `win-x64`/`win-x86` self-contained single files and compiles Inno |

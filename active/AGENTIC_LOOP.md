@@ -13,6 +13,8 @@ Always read this file, `HANDOFF.md`, the user's named evidence, and the nearest 
 | `PROJECT_BRIEF.md` | Checking scope or user-facing product intent. |
 | `ARCHITECTURE.md` | Changing ownership, dependencies, media/patch boundaries, or packaging. |
 | `PRODUCTION_PLAN.md` | Choosing priorities, milestones, or acceptance criteria. |
+| `ENGINE_REIMPLEMENTATION_FEASIBILITY.md` | Evaluating the clean-room engine track, its protocol, or its gates. |
+| `SDL3_PORT_PLAN.md` | Planning or reviewing the engine port's architecture, milestones, or budgets. |
 | `TECH_DEBT.md` | Growing a large file, accepting risk, or extracting a contract. |
 | `TEST_STRATEGY.md` | Changing behavior, tests, diagnostics, or release gates. |
 | `RELEASES.md` | Building, signing, scanning, publishing, or making baseline claims. |
