@@ -49,9 +49,7 @@ Validation: 37/37 records, clean end. Ids: `95` = `None`, then `48`.. as `01-Ops
 Both use the same tagged-record family as mech `.contents` (`erf-geometry.md`): `[u16 20][u16 0x70]` then `u32 2, u32 2, u32 0`, a type id (`0x421` = 1057 for contents, `0x431` = 1073 for subsystems), an identity-matrix float block, and size-prefixed sub-records (for example `[u32 4][u32 152]` inside `.subsystems`).
 
 - **`<mech>.subsystems`** (Mad Cat: 5,018 B): the mech's equipment loadout; record boundaries are size-prefixed and sub-record ids appear in the 900s.
-- **`<mech>.damage`** (Mad Cat: 1,688 B): 21 per-joint records (each joint named twice), pairs of sub-records:
-  - Armor block: `f32 1.0, 1.0`, a ratio (`0.14`), the length-prefixed joint name, counts `2, 2`, then `f32 armor` (`42.0` for the large arm), an id (1,162), and two structure floats (`21.0, 21.0`).
-  - Transfer block: joint name, count `4`, then four entries `[u16 1][u16 location]` with `f32` weights — measured locations `224–227` with weights `0.99, 0.75, 0.5, 0.25` (damage transfer to hit locations).
+- **`<mech>.damage`** (Mad Cat: 1,688 B): per-joint records with a common prefix `[u32 468][f32 1.0][f32 1.0][f32 ratio][length-prefixed joint name][u16 count, u16 count][u32 0][u32 0][f32 armor][u32 −1]` and an **optional extension** (`u32 1162`, present on arms/legs/head/torso fronts/specials, absent on hipbelow): `[u32 1162][f32 structure, f32 structure][length-prefixed name again][4, 2, −1, 0, −1][u32 weightCount][weightCount × {u16 1, u16 location, f32 weight}][16-byte trailer]`. Extension records carry four transfer weights (arms: locations 224–227 with weights 0.99/0.75/0.5/0.25). Measured armor/structure per joint (Mad Cat): large arms 42/21, legs 66/39, head 18/6, torso fronts 54/27, specials 40/1, hipbelow 63 (armor only).
 
 ## Open items
 
