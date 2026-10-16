@@ -1,6 +1,6 @@
 # `.mw4` archive container (`#VBD` version 4)
 
-Status: measured and validated on seven retail artifacts across Mercenaries, Vengeance, and Black Knight (21,919 entries decoded to declared lengths). Official patch payloads and the large map, `props`, and `textures` archives remain open. Facts below come from independent measurement with the Phase 1 probe; no community material or generated code was used.
+Status: measured and validated on retail artifacts across Mercenaries, Vengeance, and Black Knight (the original seven plus the large archives below; every staged archive now decodes fully, including `textures.mw4` at 298,772,838 decoded bytes and `props.mw4` at 14,527 entries). Official patch payloads remain unprobed (not staged). Facts below come from independent measurement with the Phase 1 probe; no community material or generated code was used.
 
 ## Provenance
 
@@ -17,6 +17,11 @@ Status: measured and validated on seven retail artifacts across Mercenaries, Ven
 | Artifact 5 | Vengeance disc 2 `RESOURCE/MISSIONS/0104.MW4`, 831,028 bytes, SHA-256 `96fdd8ae97891736e6f54eba82ac09e4ad2f1f780ba7e7da5cb567e4e6017fbc` |
 | Artifact 6 | Black Knight `RESOURCE/COREX.MW4`, 1,212,667 bytes, SHA-256 `501bb6b14cddb755516b17f26879112de56261c6298ff5a69fac82bf7b73d3a0` |
 | Artifact 7 | Black Knight `RESOURCE/MISSIONS/EDITOR_1.MW4`, 8,056 bytes, SHA-256 `9c0f7e7a4b244b80dd265ee991ffb8995428f4c20c42e7520d9982e5984cc198` |
+| Artifact 8 | Mercenaries `GAME/RESOURCE/textures.mw4`, 8,618 entries / 298,772,838 decoded bytes (engine `vbd-cli verify`, 2026-10-11) |
+| Artifact 9 | Mercenaries `GAME/RESOURCE/props.mw4`, 14,527 entries / 237,629,556 decoded bytes |
+| Artifact 10 | Vengeance disc 2 `RESOURCE/MAPS/URBAN02.MW4`, 14,109,022 bytes, 395 entries / 25,028,977 decoded bytes |
+| Artifact 11 | Vengeance disc 2 `RESOURCE/MAPS/ARCTIC01.MW4`, 181 entries / 13,430,112 decoded bytes |
+| Artifact 12 | Vengeance disc 2 `RESOURCE/MAPS/DESERT01.MW4`, 199 entries / 11,787,862 decoded bytes |
 | Probe | Untracked scratch `.local/re/vbd_probe.py` and `.local/re/vbd_detail.py`; Python 3.14; macOS 27 arm64; 2026-10-11 |
 | Extraction validation | All payloads decoded; decoded byte counts equal declared lengths exactly (8,987/8,987 entries) |
 
@@ -84,7 +89,7 @@ Core top-level name components: `mechs` 5,416, `effects` 2,978, `weaponsubsystem
 
 ## Validation
 
-- Decode: every entry in all seven artifacts decodes to exactly its declared `unpackedLength` (21,919 of 21,919), including the 8 KB Black Knight template archive.
+- Decode: every entry in all seven original artifacts decodes to exactly its declared `unpackedLength` (21,919 of 21,919), including the 8 KB Black Knight template archive; the five additional archives (Artifacts 8–12) also decode completely (the 300 MB `textures.mw4` among them).
 - Structure: decoded `tables\mechtable.mpt` begins `24 00 00 00` = 36, followed by the 36-character ASCII path `Mechs\ArcticWolf\ArcticWolf.instance` and a NUL byte, proving the decode reproduces structured content rather than matching lengths by chance.
 - Directory: record sizes sum exactly to the declared directory length; ordinals are exactly `1..N`.
 - Cross-title: all seven artifacts share version 4 and the fixed `u32@0x08 = 63` value; `u32@0x10` is the duplicated `entryCount + 1` in every case; root payload semantics hold (empty for `core`/`corex`, parent-map reference for missions).
@@ -97,7 +102,7 @@ Core top-level name components: `mechs` 5,416, `effects` 2,978, `weaponsubsystem
 - Meaning of the duplicated `entryCount + 1` field at `0x10` (ordinal high-water mark or version pair).
 - Root payload semantics for other archive kinds (only missions and `core.mw4` measured).
 - The 7 `/`-separated names in core (mount-prefixed effect paths).
-- Official patch payloads: Vengeance Patch 3 and Mercenaries PR1 `core.mw4`, Black Knight PR1 `corex.mw4`; the large `props.mw4`/`textures.mw4` and map archives (`RESOURCE/MAPS/*.MW4`, up to ~27 MB stored) are also unprobed.
+- Official patch payloads: Vengeance Patch 3 and Mercenaries PR1 `core.mw4`, Black Knight PR1 `corex.mw4` (not staged; the only unprobed class). The large `props.mw4`/`textures.mw4` and three further map archives are verified (Artifacts 8–12).
 - Commit a maintained measurement tool (the probes are untracked scratch).
 
 Cross-check only: the project-owned Mech Pak transform reads this container with the same field offsets and an equivalent LZW variant (`src/MW4Remastered.Core/Install/MechPakActivationTransform.cs:416-577`); the specification above stands on the measurements, not on that code.

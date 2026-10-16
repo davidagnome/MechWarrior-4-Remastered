@@ -2,6 +2,10 @@
 
 Status: reconnaissance. The outer header, the `#RLM` record chain, per-record position/UV data blocks, strip-order byte indices, and the per-LOD vertex-count plus normals blocks are measured and visually verified, and texture binding is measured and visually confirmed (`@<base>{k}.tga` mech-wide chains sampled through the decoded UVs); the per-record float region, data-block framing fields, and exact texture-level selection remain open, as do the joint/armature transforms required to place limb parts. Facts below come from independent measurement of decoded archive payloads (see [mw4-archive.md](mw4-archive.md) for the container).
 
+## Record families
+
+Mech parts use short record names (for example `arc_lgun`). Cultural tree/prop ERFs (type `145`) share the container and the `[u32 nameLength][name][NUL][four zeros][u32 indexCount][indices]` record prelude but use longer names (for example `tree_arctic_snowy01_branch_mip2`, 31 chars), three LOD records per mesh (24-, 8-, and 4-vertex billboards for the arctic trees), and 16-bit `bpp=32` cutout textures named by the record.
+
 ## Where ERF data lives
 
 Measured entry counts by archive (Mercenaries retail, `MSGAME.CAB`; `props.mw4` SHA-256 `2416de0e724fb35615c9ffc93a465d42f6551d38121b92d3c918766671d52081`, `textures.mw4` `6b4a39c98d0502047ae22c96219d8d708e3c85b4c2794d52ce2bf589d60b75a7`, `core.mw4` `780ef6393291ae2716eea83c9da8b5f1cd7469bd1126e925075ea60a2bf9d0c9`):

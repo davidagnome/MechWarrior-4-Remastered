@@ -1,6 +1,6 @@
 # Animation clips (`.mw4anim`)
 
-Status: partially measured. The clip header, region table, and joint directory are decoded and verified on three clips; value channels and the track directory are partially decoded from the fully dumped water clip. Facts come from independent measurement; community material was not used.
+Status: partially measured. The clip header, region table, effect-site names, and the region-3 key-time table are decoded and verified on five clips (atlas ×3, water, plus the Mad Cat `mad_walk`/`mad_standpose`); the per-track value/rotation pairing is the remaining open item. Facts come from independent measurement; community material was not used.
 
 ## Provenance
 
@@ -37,8 +37,8 @@ Between the name and region 1 is a **gap of uninitialized bytes** — `0xFF` fil
 ## Regions
 
 - **Region 1 — joint directory.** Names of the joints the clip drives, interleaved with u16 fields (approximately `[u16 id][u16 ?]` per entry; ids in the 9,1xx range like the asset-table ids). The atlas clips list exactly the foot sites `site_rfoot` and `site_lfoot` — the same site-joint names as the skeleton (`erf-geometry.md`), confirming clips reference skeleton joints by name. The water clip lists `joint_water`.
-- **Region 2 — float track data.** Floating-point values at one-byte-late alignment (for example 7.35 and 9.6 in `atl_back`); the water clip's values alternate around ±0.5 and ±1.0, consistent with UV-scroll keys for a tiling water surface.
-- **Region 3 — track/value storage** (floats normalized 0–1 observed: 0.0333, 0.3, 0.5, 1.0).
+- **Region 2 — float track data.** Floating-point values at one-byte-late alignment (for example 7.35 and 9.6 in `atl_back`); the water clip's values alternate around ±0.5 and ±1.0, consistent with UV-scroll keys for a tiling water surface. In `mad_standpose` the region is ~identity (mostly zero floats with sign bits), consistent with rotation/key tracks in the rest pose; `mad_walk` fills 6,072 bytes (vs 424 for the stand pose), so the region scales with motion.
+- **Region 3 — key-time table.** Floats begin one byte into the region (a tag byte precedes them) and hold the clip's key times: `mad_walk` (duration 1.0667 s) starts `0, 0.1, 1.0667, 0, 1.0667, 0` then an ascending run `0.1, 0.1333, 0.1667, … 0.9667` with variable gaps (a 1/30 s cadence where motion changes, sparser where it is smooth). 384 floats total in the walk clip, all within `[0, duration]`.
 - **Region 4 — event/track table** running to EOF: repeating 16-byte records `[u32 16][u32 start][u32 end][4 flag/tag bytes]` in the atlas clip (start/end stepping by about 52–64 per record, from 1000 upward).
 
 ## Channel layout (water clip, fully dumped at 249 bytes)
